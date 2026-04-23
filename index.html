@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWebApp | Sign Up</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#000000",
+                        secondary: "#facc15",
+                        accent: "#facc15",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500&family=Bebas+Neue&display=swap');
+        
+        :root {
+            --color-primary: #000; --color-secondary: #facc15; --color-accent: #facc15;
+            --color-destructive: #ef4444; --color-chart-1: #3b82f6; --color-chart-2: #10b981;
+            --color-chart-3: #f59e0b; --color-chart-4: #6366f1; --color-chart-5: #ec4899;
+        }
+
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #fff; overflow-x: hidden; }
+        body.auth-active { overflow: hidden; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-logo { font-family: 'Bebas Neue', sans-serif; }
+
+        /* Auth Transitions */
+        .auth-container { transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); opacity: 1; }
+        .auth-container.hidden { opacity: 0; pointer-events: none; transform: scale(0.9) translateY(-20px); }
+
+        /* Step Transitions */
+        .step {
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            position: absolute; width: 100%; top: 50%; left: 50%;
+            transform: translate(-50%, -45%); opacity: 0; filter: blur(10px); pointer-events: none;
+        }
+        .step.active {
+            opacity: 1; filter: blur(0px); transform: translate(-50%, -50%); pointer-events: auto;
+        }
+
+        /* Glass Effects */
+        .glass-button {
+            backdrop-filter: blur(8px);
+            background: linear-gradient(-75deg, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative; overflow: hidden;
+        }
+        .glass-button:hover { transform: scale(0.975); background: rgba(0,0,0,0.15); }
+        .glass-button::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(-45deg, transparent 0%, rgba(255,255,255,0.4) 40% 50%, transparent 60%);
+            background-size: 200% 200%; background-position: 150% 50%;
+            transition: background-position 0.6s ease; mix-blend-mode: screen;
+        }
+        .glass-button:hover::after { background-position: -50% 50%; }
+
+        .glass-input-wrap {
+            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2rem; padding: 3rem; width: 340px; text-align: center;
+            transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .text-loop-item { display: none; animation: slideUp 0.4s ease forwards; }
+        .text-loop-item.active { display: block; }
+        @keyframes slideUp { 0% { transform: translateY(15px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        /* Animated SVG Background */
+        .float-1 { animation: float1 20s ease-in-out infinite; }
+        .float-2 { animation: float2 25s ease-in-out infinite; }
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-15px, 15px); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(15px, -15px); } }
+
+        /* --- GALLERY STYLES --- */
+        #smooth-wrapper {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background: #000;
+            color: #fff;
+        }
+        .panel {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .panel h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 8vw;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .horiz-gallery-wrapper {
+            height: 100vh;
+            background: #000;
+        }
+        .horiz-gallery-strip {
+            display: flex;
+            flex-wrap: nowrap;
+            will-change: transform;
+            height: 100%;
+            align-items: center;
+        }
+        .project-wrap {
+            flex-shrink: 0;
+            width: 35vw;
+            padding: 4rem;
+            transition: transform 0.5s ease;
+        }
+        .project-wrap:hover { transform: scale(1.05); }
+        .project-wrap img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="auth-active">
+
+    <!-- Auth Container -->
+    <div id="auth-container" class="auth-container min-h-screen flex items-center justify-center relative">
+        <!-- SVG Background -->
+        <div class="fixed inset-0 z-0 overflow-hidden">
+            <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" class="absolute top-0 left-0 w-full h-full">
+                <defs>
+                    <linearGradient id="rev_grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.8" /><stop offset="100%" style="stop-color:var(--color-chart-3);stop-opacity:0.6" /></linearGradient>
+                    <linearGradient id="rev_grad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--color-chart-4);stop-opacity:0.9" /><stop offset="50%" style="stop-color:var(--color-secondary);stop-opacity:0.7" /><stop offset="100%" style="stop-color:var(--color-chart-1);stop-opacity:0.6" /></linearGradient>
+                    <radialGradient id="rev_grad3" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:var(--color-destructive);stop-opacity:0.8" /><stop offset="100%" style="stop-color:var(--color-chart-5);stop-opacity:0.4" /></radialGradient>
+                    <filter id="rev_blur1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="35"/></filter>
+                </defs>
+                <g class="float-1">
+                    <ellipse cx="200" cy="500" rx="250" ry="180" fill="url(#rev_grad1)" filter="url(#rev_blur1)" transform="rotate(-30 200 500)"/>
+                    <rect x="500" y="100" width="300" height="250" rx="80" fill="url(#rev_grad2)" filter="url(#rev_blur1)" transform="rotate(15 650 225)"/>
+                </g>
+                <g class="float-2">
+                    <circle cx="650" cy="450" r="150" fill="url(#rev_grad3)" filter="url(#rev_blur1)" opacity="0.7"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="fixed top-8 left-0 right-0 z-50 flex flex-col items-center">
+            <img src="logo.png" alt="Logo" class="h-32 w-auto drop-shadow-[0_0_15px_rgba(0,0,0,0.1)]">
+        </div>
+
+        <div class="relative z-10 w-full max-w-[360px] h-[520px] px-8">
+            <div id="step-email" class="step active flex flex-col items-center gap-10 text-center">
+                <h2 class="font-serif text-5xl text-black">Get started with Us</h2>
+                <div class="flex gap-4 w-full">
+                    <button class="glass-button flex-1 py-3.5 rounded-full text-sm font-bold">Google</button>
+                    <button class="glass-button flex-1 py-3.5 rounded-full text-sm font-bold">GitHub</button>
+                </div>
+                <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                    <input id="input-email" type="email" placeholder="Email Address" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    <button id="btn-to-password" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+
+            <div id="step-password" class="step flex flex-col items-center gap-10 text-center">
+                <h2 class="font-serif text-4xl text-black">Create password</h2>
+                <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                    <input id="input-password" type="password" placeholder="Password" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    <button id="btn-to-confirm" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                </div>
+                <button class="btn-back text-gray-400 text-xs font-semibold">GO BACK</button>
+            </div>
+
+            <div id="step-confirm" class="step flex flex-col items-center gap-10 text-center">
+                <h2 class="font-serif text-4xl text-black">Confirm password</h2>
+                <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                    <input id="input-confirm" type="password" placeholder="Confirm Password" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    <button id="btn-submit" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                </div>
+                <button class="btn-back-pass text-gray-400 text-xs font-semibold">GO BACK</button>
+            </div>
+
+            <div id="step-success" class="step flex flex-col items-center gap-8 text-center">
+                <div class="bg-blue-600/10 p-8 rounded-full border border-blue-600/20 scale-110">
+                    <i data-lucide="party-popper" class="w-14 h-14 text-blue-600"></i>
+                </div>
+                <div class="space-y-3">
+                    <h2 class="text-3xl font-black text-black uppercase tracking-tighter">Welcome Aboard!</h2>
+                    <p class="text-gray-500 font-medium">Your account is ready.</p>
+                </div>
+                <button id="btn-explore" class="glass-button px-12 py-4 rounded-full text-black font-bold text-lg shadow-lg">Start Exploring</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Container -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            <section class="panel plain bg-black text-white">
+                <div class="flex flex-col items-center gap-4">
+                    <img src="logo.png" class="h-48 w-auto invert drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                    <h3>Scroll for Hype</h3>
+                </div>
+            </section>
+
+            <section id="portfolio">
+                <div class="container-fluid">
+                    <div class="horiz-gallery-wrapper">
+                        <div class="horiz-gallery-strip">
+                            <div class="project-wrap"><img src="assets/1.jpg" alt="Collection 1"></div>
+                            <div class="project-wrap"><img src="assets/2.jpg" alt="Collection 2"></div>
+                            <div class="project-wrap"><img src="assets/3.jpg" alt="Collection 3"></div>
+                            <div class="project-wrap"><img src="assets/4.jpg" alt="Collection 4"></div>
+                            <div class="project-wrap"><img src="assets/5.jpg" alt="Collection 5"></div>
+                            <div class="project-wrap"><img src="assets/6.jpg" alt="Collection 6"></div>
+                            <div class="project-wrap"><img src="assets/7.jpg" alt="Collection 7"></div>
+                            <div class="project-wrap"><img src="assets/8.jpg" alt="Collection 8"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel plain bg-black text-white">
+                <h3>The Collection</h3>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="text-loop">
+                <div class="text-loop-item active"><i data-lucide="loader-2" class="w-14 h-14 animate-spin mx-auto mb-6"></i><p class="text-xl font-bold">Signing you up...</p></div>
+                <div class="text-loop-item"><i data-lucide="loader-2" class="w-14 h-14 animate-spin mx-auto mb-6"></i><p class="text-xl font-bold">Onboarding you...</p></div>
+                <div class="text-loop-item"><i data-lucide="loader-2" class="w-14 h-14 animate-spin mx-auto mb-6"></i><p class="text-xl font-bold">Finalizing...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const authContainer = document.getElementById('auth-container');
+        const smoothWrapper = document.getElementById('smooth-wrapper');
+        const btnExplore = document.getElementById('btn-explore');
+
+        function showStep(name) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${name}`).classList.add('active');
+        }
+
+        // Email logic
+        document.getElementById('input-email').addEventListener('input', (e) => {
+            const valid = /\S+@\S+\.\S+/.test(e.target.value);
+            const btn = document.getElementById('btn-to-password');
+            btn.style.opacity = valid ? '1' : '0';
+            btn.style.pointerEvents = valid ? 'auto' : 'none';
+        });
+        document.getElementById('btn-to-password').addEventListener('click', () => showStep('password'));
+
+        // Password logic
+        document.getElementById('input-password').addEventListener('input', (e) => {
+            const valid = e.target.value.length >= 6;
+            const btn = document.getElementById('btn-to-confirm');
+            btn.style.opacity = valid ? '1' : '0';
+            btn.style.pointerEvents = valid ? 'auto' : 'none';
+        });
+        document.getElementById('btn-to-confirm').addEventListener('click', () => showStep('confirm'));
+
+        // Confirm logic
+        document.getElementById('input-confirm').addEventListener('input', (e) => {
+            const valid = e.target.value === document.getElementById('input-password').value && e.target.value.length > 0;
+            const btn = document.getElementById('btn-submit');
+            btn.style.opacity = valid ? '1' : '0';
+            btn.style.pointerEvents = valid ? 'auto' : 'none';
+        });
+
+        // Modal Sequence
+        document.getElementById('btn-submit').addEventListener('click', () => {
+            const modal = document.getElementById('modal');
+            const items = document.querySelectorAll('.text-loop-item');
+            modal.classList.add('active');
+            let idx = 0;
+            const loop = setInterval(() => {
+                items[idx].classList.remove('active');
+                idx++;
+                if (idx < items.length) items[idx].classList.add('active');
+                else {
+                    clearInterval(loop);
+                    modal.classList.remove('active');
+                    showStep('success');
+                    confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+                }
+            }, 1500);
+        });
+
+        // --- TRANSITION TO GALLERY ---
+        btnExplore.addEventListener('click', () => {
+            authContainer.classList.add('hidden');
+            setTimeout(() => {
+                authContainer.style.display = 'none';
+                smoothWrapper.style.display = 'block';
+                setTimeout(() => {
+                    smoothWrapper.style.opacity = '1';
+                    document.body.classList.remove('auth-active');
+                    initGallery();
+                }, 50);
+            }, 800);
+        });
+
+        function initGallery() {
+            gsap.registerPlugin(ScrollTrigger);
+            const horizontalSections = gsap.utils.toArray(".horiz-gallery-wrapper");
+
+            horizontalSections.forEach(function (sec) {
+                const pinWrap = sec.querySelector(".horiz-gallery-strip");
+                const pinWrapWidth = pinWrap.scrollWidth;
+                const horizontalScrollLength = pinWrapWidth - window.innerWidth;
+
+                gsap.to(pinWrap, {
+                    scrollTrigger: {
+                        scrub: true,
+                        trigger: sec,
+                        pin: true,
+                        start: "center center",
+                        end: () => `+=${pinWrapWidth}`,
+                        invalidateOnRefresh: true
+                    },
+                    x: -horizontalScrollLength,
+                    ease: "none"
+                });
+            });
+        }
+
+        document.querySelector('.btn-back').addEventListener('click', () => showStep('email'));
+        document.querySelector('.btn-back-pass').addEventListener('click', () => showStep('password'));
+        lucide.createIcons();
+    </script>
+</body>
+</html>
