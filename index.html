@@ -181,7 +181,7 @@
 
         <div class="relative z-10 w-full max-w-[360px] h-[520px] px-8">
             <div id="step-email" class="step active flex flex-col items-center gap-10 text-center">
-                <h2 class="font-serif text-5xl text-black">Get started with Us</h2>
+                <h2 class="font-serif text-5xl text-black leading-tight">Get started with Us</h2>
                 <div class="flex gap-4 w-full">
                     <button class="glass-button flex-1 py-3.5 rounded-full text-sm font-bold">Google</button>
                     <button class="glass-button flex-1 py-3.5 rounded-full text-sm font-bold">GitHub</button>
@@ -190,6 +190,21 @@
                     <input id="input-email" type="email" placeholder="Email Address" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
                     <button id="btn-to-password" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
                 </div>
+                <button id="toggle-to-signin" class="text-sm font-semibold text-gray-500 hover:text-black transition-colors mt-2">Already have an account? <span class="text-black underline">Sign In</span></button>
+            </div>
+
+            <div id="step-signin" class="step flex flex-col items-center gap-10 text-center">
+                <h2 class="font-serif text-5xl text-black">Welcome Back</h2>
+                <div class="space-y-4 w-full">
+                    <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                        <input id="signin-email" type="email" placeholder="Email Address" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    </div>
+                    <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                        <input id="signin-password" type="password" placeholder="Password" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    </div>
+                </div>
+                <button id="btn-signin-submit" class="glass-button w-full py-4 rounded-full text-black font-bold shadow-lg">Sign In</button>
+                <button id="toggle-to-signup" class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">New here? <span class="text-black underline">Create Account</span></button>
             </div>
 
             <div id="step-password" class="step flex flex-col items-center gap-10 text-center">
@@ -210,6 +225,18 @@
                 <button class="btn-back-pass text-gray-400 text-xs font-semibold">GO BACK</button>
             </div>
 
+            <div id="step-admin" class="step flex flex-col items-center gap-10 text-center">
+                <div class="bg-black text-white p-4 rounded-2xl shadow-xl">
+                    <i data-lucide="shield-check" class="w-10 h-10"></i>
+                </div>
+                <h2 class="font-serif text-4xl text-black">Admin Portal</h2>
+                <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
+                    <input id="admin-key" type="password" placeholder="Enter Admin Key" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    <button id="btn-admin-submit" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                </div>
+                <button class="btn-back text-gray-400 text-xs font-semibold">EXIT PORTAL</button>
+            </div>
+
             <div id="step-success" class="step flex flex-col items-center gap-8 text-center">
                 <div class="bg-blue-600/10 p-8 rounded-full border border-blue-600/20 scale-110">
                     <i data-lucide="party-popper" class="w-14 h-14 text-blue-600"></i>
@@ -220,6 +247,11 @@
                 </div>
                 <button id="btn-explore" class="glass-button px-12 py-4 rounded-full text-black font-bold text-lg shadow-lg">Start Exploring</button>
             </div>
+        </div>
+
+        <!-- Admin Access -->
+        <div class="fixed bottom-8 left-0 right-0 z-50 flex justify-center">
+            <button id="btn-admin-access" class="glass-button px-6 py-2 rounded-full text-[10px] font-bold text-gray-400 hover:text-black transition-all tracking-widest uppercase border border-black/5">Admin Access</button>
         </div>
     </div>
 
@@ -251,7 +283,10 @@
             </section>
 
             <section class="panel plain bg-black text-white">
-                <h3>The Collection</h3>
+                <div class="flex flex-col items-center gap-8">
+                    <h3 class="text-4xl tracking-[0.4em] uppercase">The Collection</h3>
+                    <button class="glass-button px-12 py-4 rounded-full text-white font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.1)] border border-white/10 hover:bg-white hover:text-black transition-all">Start Shopping</button>
+                </div>
             </section>
         </div>
     </div>
@@ -276,6 +311,44 @@
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById(`step-${name}`).classList.add('active');
         }
+
+        // Toggles
+        document.getElementById('toggle-to-signin')?.addEventListener('click', () => showStep('signin'));
+        document.getElementById('toggle-to-signup')?.addEventListener('click', () => showStep('email'));
+        document.getElementById('btn-admin-access').addEventListener('click', () => showStep('admin'));
+
+        // Admin Portal Logic
+        const adminInput = document.getElementById('admin-key');
+        const btnAdminSubmit = document.getElementById('btn-admin-submit');
+        
+        adminInput.addEventListener('input', (e) => {
+            const hasKey = e.target.value.length > 0;
+            btnAdminSubmit.style.opacity = hasKey ? '1' : '0';
+            btnAdminSubmit.style.pointerEvents = hasKey ? 'auto' : 'none';
+        });
+
+        btnAdminSubmit.onclick = () => {
+            if (adminInput.value === '1234') {
+                confetti({ particleCount: 200, colors: ['#000', '#fff'] });
+                alert("Admin Authorized. Welcome back.");
+                showStep('success');
+            } else {
+                alert("Invalid Admin Key");
+                adminInput.value = '';
+            }
+        };
+
+        // Sign In logic
+        document.getElementById('btn-signin-submit')?.addEventListener('click', () => {
+            const email = document.getElementById('signin-email').value;
+            const pass = document.getElementById('signin-password').value;
+            if(email.includes('@') && pass.length >= 6) {
+                showStep('success');
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } else {
+                alert("Please enter valid credentials");
+            }
+        });
 
         // Email logic
         document.getElementById('input-email').addEventListener('input', (e) => {
@@ -322,9 +395,11 @@
             }, 1500);
         });
 
-        // --- TRANSITION TO GALLERY ---
+        // Gallery Transition
         btnExplore.addEventListener('click', () => {
-            authContainer.classList.add('hidden');
+            authContainer.style.opacity = '0';
+            authContainer.style.transform = 'translateY(-50px)';
+            authContainer.style.transition = 'all 0.8s ease-in-out';
             setTimeout(() => {
                 authContainer.style.display = 'none';
                 smoothWrapper.style.display = 'block';
@@ -338,36 +413,26 @@
 
         function initGallery() {
             gsap.registerPlugin(ScrollTrigger);
-            const horizontalSections = gsap.utils.toArray(".horiz-gallery-wrapper");
-
-            horizontalSections.forEach(function (sec) {
-                const pinWrap = sec.querySelector(".horiz-gallery-strip");
-                const pinWrapWidth = pinWrap.scrollWidth;
-                const horizontalScrollLength = pinWrapWidth - window.innerWidth;
-
-                gsap.to(pinWrap, {
-                    scrollTrigger: {
-                        scrub: true,
-                        trigger: sec,
-                        pin: true,
-                        start: "center center",
-                        end: () => `+=${pinWrapWidth}`,
-                        invalidateOnRefresh: true
-                    },
-                    x: -horizontalScrollLength,
-                    ease: "none"
-                });
+            const pinWrap = document.querySelector(".horiz-gallery-strip");
+            const pinWrapWidth = pinWrap.scrollWidth;
+            const horizontalScrollLength = pinWrapWidth - window.innerWidth;
+            gsap.to(pinWrap, {
+                scrollTrigger: {
+                    scrub: true,
+                    trigger: "#portfolio",
+                    pin: true,
+                    start: "top top",
+                    end: () => `+=${pinWrapWidth}`,
+                    invalidateOnRefresh: true,
+                },
+                x: -horizontalScrollLength,
+                ease: "none",
             });
         }
 
-        document.querySelector('.btn-back').addEventListener('click', () => showStep('email'));
-        document.querySelector('.btn-back-pass').addEventListener('click', () => showStep('password'));
+        document.querySelectorAll('.btn-back').forEach(btn => btn.onclick = () => showStep('email'));
+        document.querySelectorAll('.btn-back-pass').forEach(btn => btn.onclick = () => showStep('password'));
         lucide.createIcons();
     </script>
 </body>
 </html>
-
-
-
-
-
