@@ -150,9 +150,155 @@
             border-radius: 0.5rem;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
+
+        /* 3D Interactive Logo */
+        .logo-container-3d {
+            perspective: 650px;
+        }
+        .logo-outer {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(89.08% 84.62% at 16.54% 78.46%,#fbfefa 0%,#c9f6b4 39.58%,#abff84 77.6%,#2fee65 100%),
+                        url("https://assets.codepen.io/16327/noise-e82662fe.png");
+            background-blend-mode: color-dodge;
+            border-radius: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        svg.logo-3d {
+            width: 70%;
+            height: auto;
+            pointer-events: none;
+        }
+        /* 3D Tube Effect */
+        .tube-container {
+            width: 100%;
+            height: 24vw; /* Exactly as requested */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4rem 0; /* Standard section spacing */
+        }
+        .tube {
+            position: relative;
+            width: 100%;
+            height: 24vw;
+        }
+        .line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            line-height: 1;
+            margin: 0;
+            letter-spacing: -0.6vw;
+            font-size: 18vw; /* Exactly as requested */
+            white-space: nowrap;
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            color: #fff;
+        }
+        .line div { backface-visibility: hidden; }
+        .char { display: inline-block; }
     </style>
 </head>
 <body class="auth-active">
+    <!-- Admin Command Center (Nuclear Reset Version) -->
+    <div id="admin-dashboard" class="hidden fixed inset-0 z-[99999] bg-[#0e100f] text-white overflow-hidden flex" style="opacity: 1 !important; visibility: visible !important;">
+        
+        <!-- Sidebar -->
+        <div class="w-64 border-r border-white/5 bg-black/20 backdrop-blur-xl p-8 flex flex-col gap-10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-black"></i>
+                </div>
+                <h2 class="font-black tracking-tighter uppercase text-sm">Hype Admin</h2>
+            </div>
+            <nav id="admin-nav" class="flex flex-col gap-2">
+                <button data-tab="drops" class="admin-tab-btn flex items-center gap-4 p-4 rounded-xl bg-white/10 text-white transition-all">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Latest Drops</span>
+                </button>
+                <button data-tab="collection" class="admin-tab-btn flex items-center gap-4 p-4 rounded-xl text-gray-500 hover:bg-white/5 hover:text-white transition-all">
+                    <i data-lucide="layers" class="w-5 h-5"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Full Collection</span>
+                </button>
+            </nav>
+            <div class="mt-auto">
+                <button onclick="location.reload()" class="flex items-center gap-4 p-4 rounded-xl text-red-400 hover:bg-red-500/10 transition-all w-full">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <span class="text-xs font-bold uppercase tracking-widest">Exit Admin</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto p-12">
+            <!-- Tab: Latest Drops -->
+            <div id="tab-drops" class="admin-tab-content space-y-12">
+                <header class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-4xl font-black tracking-tighter uppercase mb-2">Latest Drops</h1>
+                        <p class="text-gray-500 font-medium">Manage seasonal releases and carousel items.</p>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-12 gap-8">
+                    <div class="col-span-12 lg:col-span-4">
+                        <div class="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+                            <h3 id="drops-form-title" class="text-lg font-bold mb-6 flex items-center gap-3"><i data-lucide="plus-circle" class="w-5 h-5 text-green-400"></i> New Drop</h3>
+                            <div class="space-y-4">
+                                <input id="new-prod-name" type="text" placeholder="Name" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white outline-none">
+                                <input id="new-prod-collection" type="text" placeholder="Collection" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white outline-none">
+                                <input id="new-prod-time" type="text" placeholder="Status" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white outline-none">
+                                <select id="new-prod-img" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-gray-400">
+                                    <option value="assets/1.jpg">Image 1</option><option value="assets/2.jpg">Image 2</option><option value="assets/3.jpg">Image 3</option><option value="assets/4.jpg">Image 4</option>
+                                    <option value="assets/5.jpg">Image 5</option><option value="assets/6.jpg">Image 6</option><option value="assets/7.jpg">Image 7</option><option value="assets/8.jpg">Image 8</option>
+                                </select>
+                                <button id="btn-save-drop" onclick="addProduct('drops')" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase tracking-widest text-xs hover:bg-green-400 transition-all">Broadcast</button>
+                                <button id="btn-cancel-drop" onclick="resetForm('drops')" class="hidden w-full mt-2 bg-white/5 text-gray-400 font-bold py-2 rounded-xl text-[10px] uppercase">Cancel Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 lg:col-span-8">
+                        <div id="admin-drops-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Full Collection -->
+            <div id="tab-collection" class="admin-tab-content hidden space-y-12">
+                <header class="flex justify-between items-center">
+                    <h1 class="text-4xl font-black tracking-tighter uppercase mb-2">Full Collection</h1>
+                </header>
+                <div class="grid grid-cols-12 gap-8">
+                    <div class="col-span-12 lg:col-span-4">
+                        <div class="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+                            <h3 id="coll-form-title" class="text-lg font-bold mb-6 flex items-center gap-3"><i data-lucide="plus-circle" class="w-5 h-5 text-purple-400"></i> New Product</h3>
+                            <div class="space-y-4">
+                                <input id="coll-prod-name" type="text" placeholder="Name" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white">
+                                <input id="coll-prod-collection" type="text" placeholder="Collection" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white">
+                                <input id="coll-prod-price" type="text" placeholder="Price" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white">
+                                <select id="coll-prod-img" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-gray-400">
+                                    <option value="assets/1.jpg">Image 1</option><option value="assets/2.jpg">Image 2</option><option value="assets/3.jpg">Image 3</option><option value="assets/4.jpg">Image 4</option>
+                                    <option value="assets/5.jpg">Image 5</option><option value="assets/6.jpg">Image 6</option><option value="assets/7.jpg">Image 7</option><option value="assets/8.jpg">Image 8</option>
+                                </select>
+                                <button id="btn-save-coll" onclick="addProduct('collection')" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase hover:bg-purple-400">Add to Catalog</button>
+                                <button id="btn-cancel-coll" onclick="resetForm('collection')" class="hidden w-full mt-2 bg-white/5 text-gray-400 font-bold py-2 rounded-xl text-[10px] uppercase">Cancel Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 lg:col-span-8">
+                        <div id="admin-collection-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Auth Container -->
     <div id="auth-container" class="auth-container min-h-screen flex items-center justify-center relative">
@@ -232,7 +378,9 @@
                 <h2 class="font-serif text-4xl text-black">Admin Portal</h2>
                 <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                     <input id="admin-key" type="password" placeholder="Enter Admin Key" class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
-                    <button id="btn-admin-submit" class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                    <button id="btn-admin-submit" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-black shadow-md">
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
                 </div>
                 <button class="btn-back text-gray-400 text-xs font-semibold">EXIT PORTAL</button>
             </div>
@@ -261,7 +409,14 @@
             <section class="panel plain bg-black text-white">
                 <div class="flex flex-col items-center gap-6">
                     <img src="logo.png" class="h-48 w-auto invert drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                    <h3>The Collection</h3>
+                    <div class="tube-container">
+                        <div class="tube">
+                            <h1 class="line line1">THE COLLECTION</h1>
+                            <h1 class="line line2">THE COLLECTION</h1>
+                            <h1 class="line line3">THE COLLECTION</h1>
+                            <h1 class="line line4">THE COLLECTION</h1>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -285,11 +440,138 @@
             <section class="panel plain bg-black text-white">
                 <div class="flex flex-col items-center gap-8">
                     <h3 class="text-4xl tracking-[0.4em] uppercase">The Collection</h3>
-                    <button class="glass-button px-12 py-4 rounded-full text-white font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.1)] border border-white/10 hover:bg-white hover:text-black transition-all">Start Shopping</button>
+                    <button id="btn-start-shopping" class="glass-button px-12 py-4 rounded-full text-white font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.1)] border border-white/10 hover:bg-white hover:text-black transition-all">Start Shopping</button>
                 </div>
             </section>
         </div>
     </div>
+
+    <!-- Shop Page Container (Hidden Initially) -->
+    <div id="shop-page" class="hidden fixed inset-0 z-[100] bg-white overflow-y-auto">
+        <!-- Floating 3D Logo Header -->
+        <div class="fixed top-8 right-8 z-[110] logo-container-3d">
+            <div class="logo-outer">    
+                <img src="logo.png" class="logo-3d h-full w-auto object-contain p-6">
+            </div>
+        </div>
+
+        <div class="w-full min-h-screen flex items-center justify-center bg-white text-black py-20 lg:py-40">
+            <div class="container mx-auto px-6">
+                <div class="flex gap-8 items-center justify-center flex-col">
+                    <div class="flex gap-6 flex-col items-center">
+                        <h1 class="text-5xl md:text-8xl max-w-4xl tracking-tighter text-center font-light leading-[1.1]">
+                            <span class="block text-gray-400">This is something</span>
+                            <span class="relative flex w-full justify-center overflow-hidden h-[1.5em] md:h-[1.4em]">
+                                <span id="rotating-title" class="font-bold inline-block">amazing</span>
+                            </span>
+                        </h1>
+
+                        <p class="text-lg md:text-2xl leading-relaxed tracking-tight text-gray-500 max-w-2xl text-center font-medium">
+                            Welcome to Hype District where style meets attitude. <br class="hidden md:block">
+                            Built for the streets, inspired by culture, and driven by individuality. From fresh fits to standout accessories, we bring you everything you need to level up your look. This isn’t just clothing… it’s a lifestyle.
+                        </p>
+                    </div>
+
+                    <!-- Product Drop Card Section -->
+                    <div class="w-full max-w-5xl mx-auto mt-20 px-6">
+                        <div class="rounded-3xl border border-gray-100 bg-white shadow-2xl shadow-gray-200/50 overflow-hidden p-8 md:p-12">
+                            <div class="flex items-center justify-between mb-10">
+                                <div>
+                                    <h2 class="text-3xl font-black tracking-tighter uppercase">Latest Drops</h2>
+                                    <p class="text-gray-400 font-medium">Exclusive releases from the Hype District labs.</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button id="drop-prev" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none">
+                                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                    </button>
+                                    <button id="drop-next" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none">
+                                        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="overflow-hidden">
+                                <div id="drop-track" class="flex gap-6 transition-transform duration-700 cubic-bezier(0.16, 1, 0.3, 1)">
+                                    <!-- Items will be injected here via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Details Section (Integrated In-Page) -->
+                        <div id="product-details-section" class="hidden mt-12 w-full animate-fade-in">
+                            <div class="relative w-full bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden">
+                                <!-- Section Header -->
+                                <div class="flex items-center justify-between p-6 border-b border-gray-100">
+                                    <h2 id="modal-title" class="text-xl md:text-2xl font-black tracking-tighter uppercase">Product Details</h2>
+                                    <div class="flex items-center gap-3">
+                                        <button id="btn-favorite" class="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-red-50 transition-all group">
+                                            <i data-lucide="heart" class="w-5 h-5 group-hover:fill-red-500 group-hover:text-red-500"></i>
+                                        </button>
+                                        <button id="close-details" class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all">
+                                            <i data-lucide="x" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="p-6 md:p-8">
+                                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                                        <!-- Thumbnails Column -->
+                                        <div class="md:col-span-3 order-2 md:order-1 flex md:flex-col gap-4 overflow-x-auto md:overflow-y-auto max-h-[400px] scrollbar-hide">
+                                            <div id="thumb-container" class="flex md:flex-col gap-4">
+                                                <!-- Thumbnails injected here -->
+                                            </div>
+                                        </div>
+
+                                        <!-- Main Image Area -->
+                                        <div class="md:col-span-9 order-1 md:order-2 relative group">
+                                            <div class="aspect-[4/5] rounded-3xl bg-gray-50 overflow-hidden shadow-inner">
+                                                <img id="main-product-img" src="" alt="Selected Product" class="w-full h-full object-cover transition-all duration-500">
+                                            </div>
+                                            
+                                            <!-- Navigation Arrows -->
+                                            <div class="absolute bottom-6 right-6 flex gap-3">
+                                                <button id="modal-prev" class="w-12 h-12 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center hover:bg-black hover:text-white transition-all">
+                                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                                </button>
+                                                <button id="modal-next" class="w-12 h-12 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center hover:bg-black hover:text-white transition-all">
+                                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <!-- All Products Grid Section -->
+                    <div class="w-full max-w-7xl mx-auto mt-32 px-6 pb-40">
+                        <div class="flex items-end justify-between mb-12">
+                            <div>
+                                <h2 class="text-4xl font-black tracking-tighter uppercase">Full Collection</h2>
+                                <p class="text-gray-400 font-medium">Explore the complete Hype District archive.</p>
+                            </div>
+                            <div class="relative">
+                                <button id="filter-btn" class="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-300 cursor-pointer hover:text-black transition-all">
+                                    <span id="current-filter">Filter By</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </button>
+                                <div id="filter-menu" class="hidden absolute right-0 mt-4 w-56 rounded-2xl bg-white shadow-2xl border border-gray-100 z-[120] overflow-hidden p-2">
+                                    <button onclick="filterCollection('all')" class="w-full text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all">All Items</button>
+                                    <button onclick="filterCollection('low')" class="w-full text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all">Price: Low to High</button>
+                                    <button onclick="filterCollection('high')" class="w-full text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all">Price: High to Low</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="all-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <!-- Items will be injected here via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal Overlay -->
     <div id="modal" class="modal-overlay">
@@ -315,28 +597,240 @@
         // Toggles
         document.getElementById('toggle-to-signin')?.addEventListener('click', () => showStep('signin'));
         document.getElementById('toggle-to-signup')?.addEventListener('click', () => showStep('email'));
-        document.getElementById('btn-admin-access').addEventListener('click', () => showStep('admin'));
-
-        // Admin Portal Logic
-        const adminInput = document.getElementById('admin-key');
-        const btnAdminSubmit = document.getElementById('btn-admin-submit');
-        
-        adminInput.addEventListener('input', (e) => {
-            const hasKey = e.target.value.length > 0;
-            btnAdminSubmit.style.opacity = hasKey ? '1' : '0';
-            btnAdminSubmit.style.pointerEvents = hasKey ? 'auto' : 'none';
-        });
-
-        btnAdminSubmit.onclick = () => {
+        document.getElementById('btn-admin-access').onclick = () => showStep('admin');
+        // Admin Login Handling
+        const handleAdminLogin = () => {
+            const adminInput = document.getElementById('admin-key');
             if (adminInput.value === '1234') {
                 confetti({ particleCount: 200, colors: ['#000', '#fff'] });
-                alert("Admin Authorized. Welcome back.");
-                showStep('success');
+                
+                const dashboard = document.getElementById('admin-dashboard');
+                const auth = document.getElementById('auth-container');
+                
+                // FORCE VISIBILITY FIRST
+                dashboard.classList.remove('hidden');
+                dashboard.style.display = 'flex';
+                dashboard.style.zIndex = '9999';
+                initAdminPanel();
+
+                gsap.to(auth, { opacity: 0, scale: 0.9, duration: 0.4, onComplete: () => {
+                    auth.style.display = 'none';
+                    lucide.createIcons();
+                }});
             } else {
-                alert("Invalid Admin Key");
+                console.warn("Invalid Admin Key");
                 adminInput.value = '';
             }
         };
+
+        document.getElementById('btn-admin-submit').onclick = handleAdminLogin;
+        document.getElementById('admin-key').onkeypress = (e) => {
+            if (e.key === 'Enter') handleAdminLogin();
+        };
+
+        // Admin Panel State & Logic
+        const adminDropsList = document.getElementById('admin-drops-list');
+        const adminCollectionList = document.getElementById('admin-collection-list');
+        const adminTabBtns = document.querySelectorAll('.admin-tab-btn');
+        const adminTabContents = document.querySelectorAll('.admin-tab-content');
+
+        // Load data from localStorage with safety net
+        let dropItems = [];
+        let fullCollection = [];
+
+        try {
+            dropItems = JSON.parse(localStorage.getItem('hype_drops')) || [
+                { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/1.jpg" },
+                { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assets/2.jpg" },
+                { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assets/3.jpg" },
+                { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assets/4.jpg" }
+            ];
+        } catch(e) {
+            console.error("Data corruption detected, resetting drops.");
+            dropItems = [
+                { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/1.jpg" }
+            ];
+        }
+
+        try {
+            fullCollection = JSON.parse(localStorage.getItem('hype_collection')) || [
+                { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/7.jpg" },
+                { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/8.jpg" },
+                { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/6.jpg" },
+                { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/5.jpg" }
+            ];
+        } catch(e) {
+            console.error("Data corruption detected, resetting collection.");
+            fullCollection = [
+                { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/7.jpg" }
+            ];
+        }
+
+        function saveData() {
+            localStorage.setItem('hype_drops', JSON.stringify(dropItems));
+            localStorage.setItem('hype_collection', JSON.stringify(fullCollection));
+            if (typeof initDrops === 'function') initDrops(); 
+            if (typeof initFullCollection === 'function') initFullCollection();
+        }
+
+        // Tab Switching
+        adminTabBtns.forEach(btn => {
+            btn.onclick = () => {
+                const targetTab = btn.getAttribute('data-tab');
+                adminTabBtns.forEach(b => {
+                    b.classList.remove('bg-white/10', 'text-white');
+                    b.classList.add('text-gray-500');
+                });
+                btn.classList.add('bg-white/10', 'text-white');
+                btn.classList.remove('text-gray-500');
+
+                adminTabContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+            };
+        });
+
+        function initAdminPanel() {
+            const dropsList = document.getElementById('admin-drops-list');
+            const collectionList = document.getElementById('admin-collection-list');
+            
+            if (dropsList) {
+                dropsList.innerHTML = dropItems.map((item, idx) => `
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.imageSrc}" class="w-12 h-12 rounded-lg object-cover">
+                            <div>
+                                <p class="font-bold text-sm">${item.name}</p>
+                                <p class="text-[10px] text-gray-500 uppercase font-black">${item.time}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="prepareEdit('drops', ${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-500/20 hover:text-blue-400 transition-all">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteProduct('drops', ${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-500/20 hover:text-red-400 transition-all">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (collectionList) {
+                collectionList.innerHTML = fullCollection.map((item, idx) => `
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 group">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.imageSrc}" class="w-12 h-12 rounded-lg object-cover">
+                            <div>
+                                <p class="font-bold text-sm">${item.name}</p>
+                                <p class="text-[10px] text-gray-500 uppercase font-black">${item.time}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="prepareEdit('collection', ${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-500/20 hover:text-blue-400 transition-all">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteProduct('collection', ${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-500/20 hover:text-red-400 transition-all">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        let editState = { type: null, index: null };
+
+        window.prepareEdit = (type, idx) => {
+            editState = { type, index: idx };
+            const item = type === 'drops' ? dropItems[idx] : fullCollection[idx];
+            const prefix = type === 'drops' ? 'new-prod' : 'coll-prod';
+            
+            document.getElementById(`${prefix}-name`).value = item.name;
+            document.getElementById(`${prefix}-collection`).value = item.collection;
+            document.getElementById(type === 'drops' ? 'new-prod-time' : 'coll-prod-price').value = item.time;
+            document.getElementById(`${prefix}-img`).value = item.imageSrc;
+
+            // UI Changes
+            document.getElementById(`${type === 'drops' ? 'drops' : 'coll'}-form-title`).innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-blue-400"></i> Edit Product`;
+            document.getElementById(`btn-save-${type === 'drops' ? 'drop' : 'coll'}`).innerText = 'Update Item';
+            document.getElementById(`btn-cancel-${type === 'drops' ? 'drop' : 'coll'}`).classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.resetForm = (type) => {
+            editState = { type: null, index: null };
+            const prefix = type === 'drops' ? 'new-prod' : 'coll-prod';
+            document.getElementById(`${prefix}-name`).value = '';
+            document.getElementById(`${prefix}-collection`).value = '';
+            document.getElementById(type === 'drops' ? 'new-prod-time' : 'coll-prod-price').value = '';
+            
+            document.getElementById(`${type === 'drops' ? 'drops' : 'coll'}-form-title`).innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-${type === 'drops' ? 'green' : 'purple'}-400"></i> New ${type === 'drops' ? 'Drop' : 'Product'}`;
+            document.getElementById(`btn-save-${type === 'drops' ? 'drop' : 'coll'}`).innerText = type === 'drops' ? 'Broadcast Drop' : 'Add to Catalog';
+            document.getElementById(`btn-cancel-${type === 'drops' ? 'drop' : 'coll'}`).classList.add('hidden');
+            lucide.createIcons();
+        };
+
+        window.deleteProduct = (type, idx) => {
+            if (type === 'drops') dropItems.splice(idx, 1);
+            else fullCollection.splice(idx, 1);
+            saveData();
+            initAdminPanel();
+        };
+
+        window.addProduct = (type) => {
+            const prefix = type === 'drops' ? 'new-prod' : 'coll-prod';
+            const name = document.getElementById(`${prefix}-name`).value;
+            const collection = document.getElementById(`${prefix}-collection`).value;
+            const statusOrPrice = document.getElementById(type === 'drops' ? 'new-prod-time' : 'coll-prod-price').value;
+            const imageSrc = document.getElementById(`${prefix}-img`).value;
+
+            if(name && collection && statusOrPrice) {
+                const itemData = { time: statusOrPrice, name, collection, imageSrc };
+                
+                if (editState.type === type && editState.index !== null) {
+                    // Update existing
+                    if (type === 'drops') dropItems[editState.index] = itemData;
+                    else fullCollection[editState.index] = itemData;
+                    resetForm(type);
+                } else {
+                    // Add new
+                    if (type === 'drops') dropItems.unshift(itemData);
+                    else fullCollection.unshift(itemData);
+                }
+                
+                saveData();
+                initAdminPanel();
+                
+                // Clear fields if not in edit mode (resetForm handles it if it was)
+                if (editState.index === null) {
+                    document.getElementById(`${prefix}-name`).value = '';
+                    document.getElementById(`${prefix}-collection`).value = '';
+                    document.getElementById(type === 'drops' ? 'new-prod-time' : 'coll-prod-price').value = '';
+                }
+                
+                confetti({ particleCount: 100, colors: [type === 'drops' ? '#4ade80' : '#a855f7', '#ffffff'] });
+            }
+        };
+
+        function initFullCollection() {
+            const grid = document.getElementById('all-products-grid');
+            if (!grid) return;
+            grid.innerHTML = fullCollection.map(item => `
+                <div onclick="openProductModal('${item.name}', '${item.imageSrc}')" class="group cursor-pointer">
+                    <div class="aspect-[4/5] w-full overflow-hidden rounded-[2rem] bg-gray-50 mb-6 shadow-sm border border-gray-100">
+                        <img src="${item.imageSrc}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-lg">${item.name}</h3>
+                            <p class="text-sm text-gray-400 font-medium">${item.collection}</p>
+                        </div>
+                        <span class="font-black text-sm tracking-tighter">${item.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         // Sign In logic
         document.getElementById('btn-signin-submit')?.addEventListener('click', () => {
@@ -430,8 +924,293 @@
             });
         }
 
+        // Shop Hero Logic
+        const shopPage = document.getElementById('shop-page');
+        const btnStartShopping = document.getElementById('btn-start-shopping');
+        const rotatingTitle = document.getElementById('rotating-title');
+        const titles = ["amazing", "new", "wonderful", "beautiful", "smart"];
+        let titleIndex = 0;
+
+        // 3D Tube Animation
+        function initTubeEffect() {
+            const lines = document.querySelectorAll(".line");
+            lines.forEach(line => {
+                const text = line.innerText;
+                line.innerHTML = text.split("").map(char => `<span class="char">${char === " " ? "&nbsp;" : char}</span>`).join("");
+            });
+
+            const width = window.innerWidth;
+            const depth = -width / 8;
+            const transformOrigin = `50% 50% ${depth}`;
+
+            gsap.set(lines, { perspective: 1000, transformStyle: "preserve-3d" });
+
+            const animTime = 1.2;
+            const tl = gsap.timeline({ repeat: -1 });
+
+            lines.forEach((line, index) => {
+                const chars = line.querySelectorAll(".char");
+                tl.fromTo(
+                    chars,
+                    { rotationX: -90, opacity: 0 },
+                    { 
+                        rotationX: 90, 
+                        opacity: 1,
+                        stagger: 0.05, 
+                        duration: animTime, 
+                        ease: "none", 
+                        transformOrigin,
+                        onUpdate: function() {
+                            const progress = this.progress();
+                            if(progress > 0.8) gsap.set(this.targets(), { opacity: 1 - (progress - 0.8) * 5 });
+                        }
+                    },
+                    index * 0.4
+                );
+            });
+        }
+        initTubeEffect();
+
+        // 3D Logo Logic
+        const outerRX = gsap.quickTo(".logo-outer", "rotationX", { ease: "power3" });
+        const outerRY = gsap.quickTo(".logo-outer", "rotationY", { ease: "power3" });
+        const innerX = gsap.quickTo(".logo-3d", "x", { ease: "power3" });
+        const innerY = gsap.quickTo(".logo-3d", "y", { ease: "power3" });
+
+        shopPage.addEventListener("pointermove", (e) => {
+            outerRX(gsap.utils.interpolate(15, -15, e.y / window.innerHeight));
+            outerRY(gsap.utils.interpolate(-15, 15, e.x / window.innerWidth));
+            innerX(gsap.utils.interpolate(-15, 15, e.x / window.innerWidth));
+            innerY(gsap.utils.interpolate(-15, 15, e.y / window.innerHeight));
+        });
+
+        shopPage.addEventListener("pointerleave", () => {
+            outerRX(0); outerRY(0); innerX(0); innerY(0);
+        });
+
+        function startRotationEngine() {
+            const el = document.getElementById('rotating-title');
+            if (!el) return;
+            
+            // Clear any existing animations
+            gsap.killTweensOf(el);
+            
+            function cycle() {
+                gsap.to(el, {
+                    y: -40,
+                    opacity: 0,
+                    duration: 0.5,
+                    delay: 2.5,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        titleIndex = (titleIndex + 1) % titles.length;
+                        el.textContent = titles[titleIndex];
+                        gsap.fromTo(el, 
+                            { y: 40, opacity: 0 },
+                            { y: 0, opacity: 1, duration: 0.7, ease: "back.out(1.7)", onComplete: cycle }
+                        );
+                    }
+                });
+            }
+            cycle();
+        }
+
+        // Self-start whenever shop page becomes visible
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class' && !shopPage.classList.contains('hidden')) {
+                    startRotationEngine();
+                    observer.disconnect(); // Only start once
+                }
+            });
+        });
+        observer.observe(shopPage, { attributes: true });
+
+        // Product Drop Carousel Logic
+        const dropTrack = document.getElementById('drop-track');
+        const btnDropPrev = document.getElementById('drop-prev');
+        const btnDropNext = document.getElementById('drop-next');
+
+        let dropIndex = 0;
+        const getVisibleItems = () => window.innerWidth > 768 ? 3 : 1;
+
+        function updateDropNav() {
+            if (!dropTrack.children.length) return;
+            const itemWidth = dropTrack.children[0].offsetWidth;
+            const gap = 24; // gap-6
+            const moveX = dropIndex * (itemWidth + gap);
+            dropTrack.style.transform = `translateX(-${moveX}px)`;
+            
+            btnDropPrev.disabled = dropIndex === 0;
+            btnDropNext.disabled = dropIndex >= dropItems.length - getVisibleItems();
+        }
+
+        btnDropPrev.onclick = () => { if(dropIndex > 0) { dropIndex--; updateDropNav(); } };
+        btnDropNext.onclick = () => { if(dropIndex < dropItems.length - getVisibleItems()) { dropIndex++; updateDropNav(); } };
+
+        // Collection Filter Logic
+        const filterBtn = document.getElementById('filter-btn');
+        const filterMenu = document.getElementById('filter-menu');
+        
+        filterBtn.onclick = (e) => {
+            e.stopPropagation();
+            filterMenu.classList.toggle('hidden');
+        };
+        window.addEventListener('click', () => filterMenu.classList.add('hidden'));
+
+        window.filterCollection = (type) => {
+            let sorted = [...fullCollection];
+            const getPrice = (str) => parseFloat(str.replace(/[^0-9.]/g, '')) || 0;
+            
+            if (type === 'low') sorted.sort((a, b) => getPrice(a.time) - getPrice(b.time));
+            if (type === 'high') sorted.sort((a, b) => getPrice(b.time) - getPrice(a.time));
+            
+            document.getElementById('current-filter').innerText = type === 'all' ? 'Filter By' : (type === 'low' ? 'Price: Low' : 'Price: High');
+            renderCollection(sorted);
+        };
+
+        function renderCollection(items) {
+            const grid = document.getElementById('all-products-grid');
+            if (!grid) return;
+            grid.innerHTML = items.map(item => `
+                <div onclick="openProductModal('${item.name}', '${item.imageSrc}')" class="group cursor-pointer">
+                    <div class="aspect-[4/5] w-full overflow-hidden rounded-3xl bg-gray-50 mb-6">
+                        <img src="${item.imageSrc}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight">${item.name}</h3>
+                            <p class="text-sm text-gray-400 font-medium">${item.collection}</p>
+                        </div>
+                        <p class="font-black text-sm">${item.time}</p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Product Details Section Logic
+        const productDetailsSection = document.getElementById('product-details-section');
+        const closeDetails = document.getElementById('close-details');
+        const modalTitle = document.getElementById('modal-title');
+        const mainProductImg = document.getElementById('main-product-img');
+        const thumbContainer = document.getElementById('thumb-container');
+        const modalPrev = document.getElementById('modal-prev');
+        const modalNext = document.getElementById('modal-next');
+        
+        let currentModalImages = [];
+        let currentImgIndex = 0;
+
+        function openProductModal(name, imageSrc) {
+            currentModalImages = [imageSrc, "assets/2.jpg", "assets/4.jpg", "assets/6.jpg"]; 
+            currentImgIndex = 0;
+            modalTitle.textContent = name;
+            updateModalImage();
+            
+            thumbContainer.innerHTML = currentModalImages.map((src, i) => `
+                <button onclick="setModalImage(${i})" class="thumb-btn relative overflow-hidden rounded-xl border-2 transition-all ${i === 0 ? 'border-black' : 'border-transparent opacity-60 hover:opacity-100'}">
+                    <img src="${src}" class="h-20 w-20 object-cover">
+                </button>
+            `).join('');
+
+            productDetailsSection.classList.remove('hidden');
+            gsap.fromTo(productDetailsSection, { height: 0, opacity: 0 }, { height: "auto", opacity: 1, duration: 0.8, ease: "expo.out" });
+            
+            // Scroll to the details
+            setTimeout(() => {
+                productDetailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        window.setModalImage = (index) => {
+            currentImgIndex = index;
+            updateModalImage();
+        };
+
+        function updateModalImage() {
+            mainProductImg.style.opacity = 0;
+            setTimeout(() => {
+                mainProductImg.src = currentModalImages[currentImgIndex];
+                mainProductImg.style.opacity = 1;
+            }, 200)
+            
+            document.querySelectorAll('.thumb-btn').forEach((btn, i) => {
+                btn.classList.toggle('border-black', i === currentImgIndex);
+                btn.classList.toggle('opacity-60', i !== currentImgIndex);
+                btn.classList.toggle('border-transparent', i !== currentImgIndex);
+            });
+        }
+
+        modalPrev.onclick = () => {
+            currentImgIndex = (currentImgIndex - 1 + currentModalImages.length) % currentModalImages.length;
+            updateModalImage();
+        };
+
+        modalNext.onclick = () => {
+            currentImgIndex = (currentImgIndex + 1) % currentModalImages.length;
+            updateModalImage();
+        };
+
+        closeDetails.onclick = () => {
+            gsap.to(productDetailsSection, { height: 0, opacity: 0, duration: 0.5, ease: "power4.in", onComplete: () => {
+                productDetailsSection.classList.add('hidden');
+            }});
+        };
+
+        // Keyboard Support
+        window.addEventListener('keydown', (e) => {
+            if (productDetailsSection.classList.contains('hidden')) return;
+            if (e.key === "ArrowLeft") modalPrev.onclick();
+            if (e.key === "ArrowRight") modalNext.onclick();
+            if (e.key === "Escape") closeDetails.onclick();
+        });
+
+        function initDrops() {
+            dropTrack.innerHTML = dropItems.map(item => `
+                <div onclick="openProductModal('${item.name}', '${item.imageSrc}')" class="flex-shrink-0 w-full md:w-[calc((100%/3)-1rem)] rounded-2xl border border-gray-100 bg-gray-50/50 p-6 space-y-4 hover:bg-white hover:shadow-xl cursor-pointer transition-all group">
+                    <p class="text-[10px] font-black tracking-widest text-gray-400 uppercase">${item.time}</p>
+                    <div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-white shadow-inner">
+                        <img src="${item.imageSrc}" alt="${item.name}" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight">${item.name}</h3>
+                        <p class="text-sm text-gray-400 font-medium">${item.collection}</p>
+                    </div>
+                </div>
+            `).join('');
+            updateDropNav();
+        }
+
+        // Wrap current transition logic
+        btnStartShopping.onclick = () => {
+            gsap.to("#smooth-wrapper", {
+                opacity: 0,
+                scale: 0.95,
+                duration: 1,
+                ease: "power3.inOut",
+                onComplete: () => {
+                    document.getElementById('smooth-wrapper').style.display = 'none';
+                    shopPage.classList.remove('hidden');
+                    gsap.fromTo(shopPage, 
+                        { opacity: 0, y: 50 },
+                        { opacity: 1, y: 0, duration: 1, ease: "power4.out" }
+                    );
+                    
+                    initDrops(); 
+                    lucide.createIcons();
+                }
+            });
+        };
+
         document.querySelectorAll('.btn-back').forEach(btn => btn.onclick = () => showStep('email'));
         document.querySelectorAll('.btn-back-pass').forEach(btn => btn.onclick = () => showStep('password'));
+        
+        // Initialize storefront
+        function initFullCollection() {
+            renderCollection(fullCollection);
+        }
+        
+        initFullCollection();
         lucide.createIcons();
     </script>
 </body>
